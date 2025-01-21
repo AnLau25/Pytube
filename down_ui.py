@@ -18,7 +18,7 @@ logo= logo.subsample(3, 3)
 canvas.create_image(250, 80, image=logo)
 
 label_style = ttk.Style()
-label_style.configure('TLabel', foreground='#000000', background='#FFFFFF', font=('OCR A Extended', 15))
+label_style.configure('TLabel', foreground='#000000', background='#FFFFFF', font=('OCR A Extended', 15))#Figure how to left allign
 entry_style = ttk.Style()
 entry_style.configure('TEntry', font=('Dotum',15))
 button_style = ttk.Style()
