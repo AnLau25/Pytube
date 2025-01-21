@@ -7,8 +7,13 @@ import threading
 window= Tk()
 window.title('YT video downloader')
 window.geometry('500x460+430+180')
-window.rezisable(height=FALSE, width=FALSE)
-window.mainloop()
+window.resizable(height=FALSE, width=FALSE)
 
 canvas= Canvas(window, width=500, height=400)
 canvas.pack()
+
+logo= PhotoImage(file='plantboy.png')
+logo= logo.subsample(1, 1)
+canvas.create_image(250, 80, image=logo)
+
+window.mainloop()
