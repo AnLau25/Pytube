@@ -3,6 +3,10 @@ from tkinter import ttk
 from pytube import YouTube
 from tkinter.messagebox import showinfo, showerror
 import threading
+import ctypes  # For changing the taskbar icon
+import os
+
+
 
 window = Tk()
 window.title('YT Video Downloader')
@@ -43,13 +47,16 @@ res_label.grid(row=1, column=0, padx=10, pady=5, sticky="w")
 video_res = ttk.Combobox(frame, width=10)
 video_res.grid(row=1, column=1, padx=10, pady=5, sticky="w")
 
-find_res = ttk.Button(frame, text='Buscar', style='TButton')
-find_res.grid(row=2, column=0, padx=10, pady=5, sticky='w')
+find_res_btn = ttk.Button(frame, text='Buscar', style='TButton')
+find_res_btn.grid(row=2, column=0, padx=10, pady=5, sticky='w')
 
-prgrs_label = Label(frame, text='')
-canvas.create_window(240, 360, window=prgrs_label)
+prgrs_label = ttk.Label(frame, text='', style='TLabel')
+prgrs_label.grid(row=3, column=1, padx=10, pady=5, sticky='w')
 
-prgrs_bar = ttk.Progressbar(window, orient=tk.HORIZONTAL, length=450, mode='determinate')
-canvas.create_window(250, 370, window=prgrs_bar) 
+prgrs_bar = ttk.Progressbar(frame, orient=HORIZONTAL, length=450, mode='determinate')
+prgrs_bar.grid(row=4, columnspan=3, padx=10, pady=5, sticky='w')
+
+down_btn = ttk.Button(frame, text='Descargar', style='TButton')
+down_btn.grid(row=5, column=1, padx=10, pady=5, sticky='w')
 
 window.mainloop()
