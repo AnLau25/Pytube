@@ -36,11 +36,30 @@ def download_vid():
                             if total_size<factor:
                                 return f"{tota_size:.2f}{unit}{suffix}"
                             tota_size/=factor
-                    return f"{tota_size:.2f}Y{suffix}"
-                formatted_size = get_form_size(total_size)
-                            
-            
-        
+                        return f"{tota_size:.2f}Y{suffix}"
+                    formatted_size = get_form_size(total_size)
+                    bytes_down = total_size - bytes_left
+                    percent_done=round(bytes_down/total_size*100)
+                    prgrs_bar['value'] = percent_done
+                    prgrs_label.config(text=str(percent_done) + '%, File size:' + formatted_size)
+                    window.update()
+                vid=YouTube(vid_link, on_progress_callback=on_progress)
+                vid.streams.filter(res=rsltn).first().download()
+                showinfo(title='Descarga done', message='El video ha sido descargado.')
+                prgrs_label.config(text='')
+                prgrs_bar['value']=0
+            except:
+                showerror(title='Error de descarga', message='No se pudo descargar con esta resolución')
+                prgrs_label.config(text='')
+                prgrs_bar['value'] = 0
+    except:
+        showerror(title='Error de descarga', message='Ha ocurrido un error al ' \
+                    'descargar el video\nLas causas posibles  ' \
+                    'podrian ser:\n->Link no valido\n->Falta de conexión\n'\
+                     'Asegurece de tener buena conexión y un link correcto')
+        # ressetting the progress bar and the progress label
+        prgrs_label.config(text='')
+        prgrs_bar['value'] = 0
 
 # toma el URL del video como argumento
 def vid_down(vid_url):
