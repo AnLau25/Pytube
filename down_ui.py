@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import ttk
-from pytube import YouTube
+from pytube3 import YouTube
 from tkinter.messagebox import showinfo, showerror
 import threading
 import os

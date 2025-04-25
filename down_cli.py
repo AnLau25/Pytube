@@ -1,4 +1,4 @@
-from pytube import YouTube
+from pytube3 import YouTube
 from tkinter.messagebox import showerror, showinfo
 
 def searchResolution():
@@ -20,7 +20,8 @@ def searchResolution():
             showinfo(title='Búsqueda Completada', message='Elige entre las resoluciones disponibles')
         except Exception as e:
             showerror(title='Error', message=f'Error al buscar resoluciones!\nRazones posibles:\n-> Conexión inestable\n-> Enlace inválido\n-> {e}')
-
+            
+# Downloads the video
 def download_vid():
     try:
         vid_link = url_entry.get()
