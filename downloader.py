@@ -1,10 +1,12 @@
 from tkinter import *
 from tkinter import ttk
-from pytube import YouTube
+from pytubefix import YouTube
+from pytubefix.cli import on_progress
 from tkinter.messagebox import showinfo, showerror
 import threading
 from PIL import Image, ImageTk
-import os
+from pytube. innertube import _default_clients
+
 
 # Function to fetch video resolutions
 def find_resolution():
@@ -22,7 +24,7 @@ def find_resolution():
                 showerror(title='Error', message='No se encontraron resoluciones disponibles')
                 return
             
-            resolutions['values'] = resolutions
+            video_res['values'] = resolutions
             showinfo(title='Búsqueda Completada', message='Elige entre las resoluciones disponibles')
         except Exception as e:
             showerror(title='Error', message=f'Error al buscar resoluciones!\nRazones posibles:\n-> Conexión inestable\n-> Enlace inválido\n-> {e}')
@@ -51,10 +53,6 @@ def download_vid():
         if rsltn == 'None':
             showerror(title='Error', message='La resolución no puede ser "Nada"')
             return
-        
-        down_btn.config(state="disabled")
-        find_res_btn.config(state="disabled")
-        window.update()
         
         def on_progress(stream, chunk, bytes_left):
             total_size = stream.filesize
@@ -92,6 +90,13 @@ def download_vid():
         showerror(title='Error de descarga', message=f'Ha ocurrido un error al descargar el video.\nPosibles causas:\n-> Enlace no válido\n-> Falta de conexión\n-> {e}')
         prgrs_label.config(text='')
         prgrs_bar['value'] = 0
+
+
+#def download():
+#   vid = url_entry.get()
+#    video = YouTube(vid)
+#    video = video.streams.filter(file_extension='mp4').get_highest_resolution()
+#    video.download()
 
 # Tkinter Window Setup
 window = Tk()
