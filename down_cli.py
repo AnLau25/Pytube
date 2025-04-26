@@ -1,7 +1,8 @@
 from pytube import YouTube
+import threading
 from tkinter.messagebox import showerror, showinfo
 
-def searchResolution():
+def find_resolution():
     vid_link = url_entry.get()
     if vid_link == '':
         showerror(title='Error', message='Por favor incluye el enlace del video')
@@ -20,6 +21,15 @@ def searchResolution():
             showinfo(title='Búsqueda Completada', message='Elige entre las resoluciones disponibles')
         except Exception as e:
             showerror(title='Error', message=f'Error al buscar resoluciones!\nRazones posibles:\n-> Conexión inestable\n-> Enlace inválido\n-> {e}')
+            
+#Runing searchResolution as a separate thread
+def thread_findRes():
+    t1 = threading.Thread(target=find_resolution)
+    t1.start()
+            
+def thread_download():
+    t2 = threading.Thread(target=download_vid)
+    t2.start()
             
 # Downloads the video
 def download_vid():
@@ -94,4 +104,3 @@ try:
 except Exception as e:
     print(f'Error general: {e}')
 
-#Fix pk no puede leer videos

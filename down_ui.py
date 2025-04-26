@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import ttk
-from pytube3 import YouTube
+from pytube import YouTube
 from tkinter.messagebox import showinfo, showerror
 import threading
 import os
@@ -108,7 +108,7 @@ res_label.grid(row=1, column=0, padx=10, pady=5, sticky="w")
 video_res = ttk.Combobox(frame, width=10)
 video_res.grid(row=1, column=1, padx=10, pady=5, sticky="w")
 
-find_res_btn = ttk.Button(frame, text="Buscar", style="TButton", command=fetch_resolutions)
+find_res_btn = ttk.Button(frame, text="Buscar", style="TButton", command=thread_findRes)
 find_res_btn.grid(row=2, column=0, padx=10, pady=5, sticky="w")
 
 prgrs_label = ttk.Label(frame, text="", style="TLabel")
@@ -117,7 +117,7 @@ prgrs_label.grid(row=3, column=1, padx=10, pady=5, sticky="w")
 prgrs_bar = ttk.Progressbar(frame, orient=HORIZONTAL, length=450, mode="determinate")
 prgrs_bar.grid(row=4, columnspan=3, padx=10, pady=5, sticky="w")
 
-down_btn = ttk.Button(frame, text="Descargar", style="TButton", command=start_download)
+down_btn = ttk.Button(frame, text="Descargar", style="TButton", command=thread_download)
 down_btn.grid(row=5, column=1, padx=10, pady=5, sticky="w")
 
 window.mainloop()
