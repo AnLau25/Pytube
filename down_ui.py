@@ -3,70 +3,95 @@ from tkinter import ttk
 from pytube import YouTube
 from tkinter.messagebox import showinfo, showerror
 import threading
+from PIL import Image, ImageTk
 import os
 
-#changes?
 # Function to fetch video resolutions
-def fetch_resolutions():
-    url = url_entry.get()
-    if not url:
-        showerror("Error", "Por favor, ingrese un URL válido.")
-        return
-
+def find_resolution():
+    vid_link = url_entry.get()
+    if vid_link == '':
+        showerror(title='Error', message='Por favor incluye el enlace del video')
+    else:
+        try:
+            vid = YouTube(vid_link)
+            resolutions = [stream.resolution for stream in vid.streams.filter(file_extension='mp4', res=True)]
+            resolutions = list(set(resolutions))  # Remove duplicates
+            resolutions.sort(reverse=True)  # Sort resolutions in descending order
+            
+            if not resolutions:
+                showerror(title='Error', message='No se encontraron resoluciones disponibles')
+                return
+            
+            resolutions['values'] = resolutions
+            showinfo(title='Búsqueda Completada', message='Elige entre las resoluciones disponibles')
+        except Exception as e:
+            showerror(title='Error', message=f'Error al buscar resoluciones!\nRazones posibles:\n-> Conexión inestable\n-> Enlace inválido\n-> {e}')
+            
+#Runing searchResolution as a separate thread
+def thread_findRes():
+    t1 = threading.Thread(target=find_resolution)
+    t1.start()
+            
+def thread_download():
+    t2 = threading.Thread(target=download_vid)
+    t2.start()
+            
+# Downloads the video
+def download_vid():
     try:
-        yt = YouTube(url)
-        streams = yt.streams.filter(progressive=True, file_extension="mp4")
-        resolutions = sorted(set(stream.resolution for stream in streams if stream.resolution), reverse=True)
-        video_res["values"] = resolutions
-        if resolutions:
-            video_res.current(0)  # Set first resolution as default
-        else:
-            showerror("Error", "No se encontraron resoluciones disponibles.")
-    except Exception as e:
-        showerror("Error", f"No se pudo obtener resoluciones.\n{str(e)}")
-
-
-# Function to update progress bar
-def on_progress(stream, chunk, bytes_remaining):
-    total_size = stream.filesize
-    downloaded = total_size - bytes_remaining
-    percentage = (downloaded / total_size) * 100
-    prgrs_bar["value"] = percentage
-    prgrs_label["text"] = f"Descargando... {int(percentage)}%"
-
-
-# Fix tmr, it's the last step and then fix pytube
-def download_video():
-    url = url_entry.get()
-    resolution = video_res.get()
-
-    if not url or not resolution:
-        showerror("Error", "Por favor, ingrese un URL válido y seleccione una resolución.")
-        return
-
-    try:
-        yt = YouTube(url, on_progress_callback=on_progress)
-        stream = yt.streams.filter(res=resolution, file_extension="mp4").first()
+        vid_link = url_entry.get().strip()
+        rsltn = video_res.get()
         
-        if not stream:
-            showerror("Error", "No se encontró la resolución seleccionada.")
+        if not vid_link:
+            showerror(title='Error', message='Falta el enlace del video')
             return
-
-        save_path = os.path.expanduser("~/Downloads")
-        prgrs_label["text"] = "Descargando..."
-        stream.download(save_path)
-        showinfo("Completado", f"Descarga completada. Archivo guardado en:\n{save_path}")
-        prgrs_label["text"] = "Descarga completada"
-        prgrs_bar["value"] = 0  # Reset progress bar
-
+        if not rsltn:
+            showerror(title='Error', message='Seleccione una resolución')
+            return
+        if rsltn == 'None':
+            showerror(title='Error', message='La resolución no puede ser "Nada"')
+            return
+        
+        down_btn.config(state="disabled")
+        find_res_btn.config(state="disabled")
+        window.update()
+        
+        def on_progress(stream, chunk, bytes_left):
+            total_size = stream.filesize
+            
+            def get_form_size(size, factor=1024, suffix='B'):
+                for unit in ["", "K", "M", "G", "T", "P", "E", "Z"]:
+                    if size < factor:
+                        return f"{size:.2f}{unit}{suffix}"
+                    size /= factor
+                return f"{size:.2f}Y{suffix}"
+            
+            formatted_size = get_form_size(total_size)
+            bytes_downloaded = total_size - bytes_left
+            percent_done = round(bytes_downloaded / total_size * 100)
+            prgrs_bar['value'] = percent_done
+            prgrs_label.config(text=f'{percent_done}%, Tamaño del archivo: {formatted_size}')
+            window.update()
+        
+        vid = YouTube(vid_link, on_progress_callback=on_progress)
+        stream = vid.streams.filter(res=rsltn, file_extension='mp4').first()
+        
+        down_btn.config(state="normal")
+        find_res_btn.config(state="normal")
+        
+        if stream:
+            stream.download()
+            showinfo(title='Descarga Completa', message='El video ha sido descargado exitosamente.')
+            prgrs_label.config(text='')
+            prgrs_bar['value'] = 0
+        else:
+            showerror(title='Error de descarga', message='No se pudo descargar en esta resolución')
+            prgrs_label.config(text='')
+            prgrs_bar['value'] = 0
     except Exception as e:
-        showerror("Error", f"No se pudo descargar el video.\n{str(e)}")
-
-
-# Function to run download in separate thread
-def start_download():
-    threading.Thread(target=download_video, daemon=True).start()
-
+        showerror(title='Error de descarga', message=f'Ha ocurrido un error al descargar el video.\nPosibles causas:\n-> Enlace no válido\n-> Falta de conexión\n-> {e}')
+        prgrs_label.config(text='')
+        prgrs_bar['value'] = 0
 
 # Tkinter Window Setup
 window = Tk()
@@ -79,8 +104,9 @@ canvas = Canvas(window, width=500, height=460, bg="white")
 canvas.pack()
 
 # Logo
-logo = PhotoImage(file="plantboy.png")
-logo = logo.subsample(3, 3)
+logo_img = Image.open("plantboy.png")
+logo_img = logo_img.resize((200, 150)) 
+logo = ImageTk.PhotoImage(logo_img)
 canvas.create_image(250, 80, image=logo)
 
 # Frame for input elements
