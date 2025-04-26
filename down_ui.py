@@ -35,7 +35,7 @@ def on_progress(stream, chunk, bytes_remaining):
     prgrs_label["text"] = f"Descargando... {int(percentage)}%"
 
 
-# Function to download video
+# Fix tmr, it's the last step and then fix pytube
 def download_video():
     url = url_entry.get()
     resolution = video_res.get()
