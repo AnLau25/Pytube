@@ -105,6 +105,8 @@ def download_vid():
                 stream.download(output_path=folder_dir if folder_dir else None)
             else:
                 video_stream = vid.streams.filter(adaptive=True, res=rsltn, file_extension='mp4').first()
+                #video_stream = vid.streams.filter(adaptive=True, res=rsltn, file_extension='mp4', only_video=True).first()
+                #ffmpeg not recognized
                 audio_stream = vid.streams.filter(adaptive=True, only_audio=True, file_extension='mp4').first()
                 
                 if not video_stream or not audio_stream:
@@ -117,7 +119,7 @@ def download_vid():
 
                 # Use ffmpeg to merge
                 command = f'ffmpeg -i "{video_path}" -i "{audio_path}" -c:v copy -c:a aac -strict experimental "{output_path}"'
-                subprocess.call(command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+                subprocess.call(command, shell=True)
 
                 # Clean up temporary files
                 os.remove(video_path)
