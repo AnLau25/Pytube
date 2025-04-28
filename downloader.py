@@ -103,32 +103,27 @@ def download_vid():
             new_file = base + '.mp3'
             os.rename(file_path, new_file)
         
-        elif video_type.get() == "Video only":
-            stream = vid.streams.filter(progressive=True, res=rsltn, file_extension='mp4').first()
-
-            if stream:
-                stream.download(output_path=folder_dir if folder_dir else None)
-            else:
-                video_stream = vid.streams.filter(adaptive=True, res=rsltn, file_extension='mp4').first()
-                #video_stream = vid.streams.filter(adaptive=True, res=rsltn, file_extension='mp4', only_video=True).first()
-                #ffmpeg not recognized
-                audio_stream = vid.streams.filter(adaptive=True, only_audio=True, file_extension='mp4').first()
+        elif video_type.get() == "Video":
+            video_stream = vid.streams.filter(adaptive=True, res=rsltn, file_extension='mp4').first()
+            #video_stream = vid.streams.filter(adaptive=True, res=rsltn, file_extension='mp4', only_video=True).first()
+            #ffmpeg not recognized
+            audio_stream = vid.streams.filter(adaptive=True, only_audio=True, file_extension='mp4').first()
                 
-                if not video_stream or not audio_stream:
-                    showerror(title='Error', message='No se encontraron streams adecuados')
-                    return
-                video_path = video_stream.download(filename="video.mp4", output_path=folder_dir)
-                audio_path = audio_stream.download(filename="audio.mp4", output_path=folder_dir)
+            if not video_stream or not audio_stream:
+                showerror(title='Error', message='No se encontraron streams adecuados')
+                return
+            video_path = video_stream.download(filename="video.mp4", output_path=folder_dir)
+            audio_path = audio_stream.download(filename="audio.mp4", output_path=folder_dir)
 
-                output_path = os.path.join(folder_dir, vid.title + ".mp4")
+            output_path = os.path.join(folder_dir, vid.title + ".mp4")
 
-                # Use ffmpeg to merge
-                command = f'ffmpeg -i "{video_path}" -i "{audio_path}" -c:v copy -c:a aac -strict experimental "{output_path}"'
-                subprocess.call(command, shell=True)
+            # Use ffmpeg to merge
+            command = f'ffmpeg -i "{video_path}" -i "{audio_path}" -c:v copy -c:a aac -strict experimental "{output_path}"'
+            subprocess.call(command, shell=True)
 
-                # Clean up temporary files
-                os.remove(video_path)
-                os.remove(audio_path)
+            # Clean up temporary files
+            os.remove(video_path)
+            os.remove(audio_path)
                 
         down_btn.config(state="normal")
         find_res_btn.config(state="normal")
