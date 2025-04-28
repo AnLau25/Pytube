@@ -33,7 +33,18 @@ def find_resolution():
                     return
                 
                 video_res['values'] = audios
+            
+            elif video_type.get() == "Subs":
+                captions = [f"{caption.lang}"for caption in vid.captions.all]
+                captions = list(set(captions))
+                captions.sort(reverse=True)
                 
+                if not captions:
+                    showerror(title='Error', message='No se encontraron subtítulos disponibles')
+                    return
+                
+                video_res['values'] = captions
+                                      
             else:
                 videos = [stream.resolution for stream in vid.streams.filter(file_extension='mp4', res=True) if stream.resolution is not None]
                 videos = list(set(videos))  # Remove duplicates
@@ -182,11 +193,11 @@ url_entry.grid(row=0, column=1, padx=10, pady=5, sticky="w")
 type_label = ttk.Label(frame, text="Tipo de video:", style="TLabel")
 type_label.grid(row=1, column=0, padx=10, pady=5, sticky="w")
 
-video_type = ttk.Combobox(frame, values=["Video", "Audio", "Video only"] ,width=10)
+video_type = ttk.Combobox(frame, values=["Video", "Audio", "Subs", "Video only"] ,width=10)
 video_type.current(0)
 video_type.grid(row=1, column=1, padx=10, pady=5, sticky="w")
 
-res_label = ttk.Label(frame, text="Resolución:", style="TLabel")
+res_label = ttk.Label(frame, text="Tipo:", style="TLabel")
 res_label.grid(row=2, column=0, padx=10, pady=5, sticky="w")
 
 video_res = ttk.Combobox(frame, width=10)
