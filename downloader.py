@@ -91,14 +91,19 @@ def download_vid():
         
         vid = YouTube(vid_link, on_progress_callback=on_progress)
         
-        if video_type.get() == "Audio":
+        if video_type.get() == "Video only":
+            stream = vid.streams.filter(progressive=True, res=rsltn, file_extension='mp4').first()
+            stream.download(output_path=folder_dir if folder_dir else None)    
+            
+        elif video_type.get() == "Audio":
             stream = vid.streams.filter(only_audio=True, abr=rsltn).first()
             file_path = stream.download(output_path= folder_dir if folder_dir else None)
         
             base, ext = os.path.splitext(file_path)
             new_file = base + '.mp3'
             os.rename(file_path, new_file)
-        else:
+        
+        elif video_type.get() == "Video only":
             stream = vid.streams.filter(progressive=True, res=rsltn, file_extension='mp4').first()
 
             if stream:
@@ -182,7 +187,7 @@ url_entry.grid(row=0, column=1, padx=10, pady=5, sticky="w")
 type_label = ttk.Label(frame, text="Tipo de video:", style="TLabel")
 type_label.grid(row=1, column=0, padx=10, pady=5, sticky="w")
 
-video_type = ttk.Combobox(frame, values=["Video", "Audio"] ,width=10)
+video_type = ttk.Combobox(frame, values=["Video", "Audio", "Video only"] ,width=10)
 video_type.current(0)
 video_type.grid(row=1, column=1, padx=10, pady=5, sticky="w")
 
