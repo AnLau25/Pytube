@@ -208,3 +208,4 @@ down_btn = ttk.Button(frame, text="Descargar", style="TButton", command=thread_d
 down_btn.grid(row=6, column=1, padx=10, pady=5, sticky="w")
 
 window.mainloop()
+#working on joining video and sound
