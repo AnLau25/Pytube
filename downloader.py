@@ -104,18 +104,27 @@ def download_vid():
         
         if video_type.get() == "Video only":
             stream = vid.streams.filter(progressive=True, res=rsltn, file_extension='mp4').first()
-            stream.download(output_path=folder_dir if folder_dir else None)    
+            stream.download(output_path=folder_dir if folder_dir else ".")    
             
         elif video_type.get() == "Audio":
             stream = vid.streams.filter(only_audio=True, abr=rsltn).first()
-            file_path = stream.download(output_path= folder_dir if folder_dir else None)
+            file_path = stream.download(output_path= folder_dir if folder_dir else ".")
         
             base, ext = os.path.splitext(file_path)
             new_file = base + '.mp3'
             os.rename(file_path, new_file)
+            
         elif video_type.get() == "Sub":
-            stream = vid.captions.get_by_language_code(rsltn)
-            stream.download(output_path=folder_dir if folder_dir else None)  
+            caption = vid.captions.get_by_language_code(rsltn)
+            
+            if not caption:
+                showerror(title='Error', message='No se encontró el subtítulo para este idioma.')
+                
+            caption_txt = caption.generate_srt_captions()
+            
+            filename=f"{vid.title}_{rsltn}.str"
+            fix_filename = "".join(c if c.isalnum() or c in " _-" else "_" for c in filename)
+            file_path = os.path.join(folder_dir if folder_dir else ".", fix_filename)  
         
         elif video_type.get() == "Video":
             video_stream = vid.streams.filter(adaptive=True, res=rsltn, file_extension='mp4').first()
@@ -126,8 +135,8 @@ def download_vid():
             if not video_stream or not audio_stream:
                 showerror(title='Error', message='No se encontraron streams adecuados')
                 return
-            video_path = video_stream.download(filename="video.mp4", output_path=folder_dir)
-            audio_path = audio_stream.download(filename="audio.mp4", output_path=folder_dir)
+            video_path = video_stream.download(filename="video.mp4", output_path=folder_dir if folder_dir else ".")
+            audio_path = audio_stream.download(filename="audio.mp4", output_path=folder_dir if folder_dir else ".")
 
             output_path = os.path.join(folder_dir, vid.title + ".mp4")
 
