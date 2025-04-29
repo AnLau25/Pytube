@@ -116,15 +116,19 @@ def download_vid():
             
         elif video_type.get() == "Sub":
             caption = vid.captions.get_by_language_code(rsltn)
-            
+    
             if not caption:
                 showerror(title='Error', message='No se encontró el subtítulo para este idioma.')
-                
+                return  # Don't continue if caption is None
+
             caption_txt = caption.generate_srt_captions()
-            
-            filename=f"{vid.title}_{rsltn}.str"
+
+            filename = f"{vid.title}_{rsltn}.srt"
             fix_filename = "".join(c if c.isalnum() or c in " _-" else "_" for c in filename)
-            file_path = os.path.join(folder_dir if folder_dir else ".", fix_filename)  
+            file_path = os.path.join(folder_dir if folder_dir else ".", fix_filename)
+
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write(caption_txt)
         
         elif video_type.get() == "Video":
             video_stream = vid.streams.filter(adaptive=True, res=rsltn, file_extension='mp4').first()
@@ -151,7 +155,7 @@ def download_vid():
         down_btn.config(state="normal")
         find_res_btn.config(state="normal")
                 
-        showinfo(title='Descarga Completa', message='El video ha sido descargado exitosamente.')
+        showinfo(title='Descarga Completa', message='El contenido ha sido descargado exitosamente.')
         prgrs_label.config(text='')
         prgrs_bar['value'] = 0
       
