@@ -51,15 +51,15 @@ def find_resolution():
                 videos.sort(reverse=True)  # Sort resolutions in descending order
                 
                 if not videos:
-                    showerror(title='Error', message='No se encontraron resoluciones disponibles')
+                    showerror(title='Error', message='No se encontraron opciones disponibles')
                     return
                 
                 video_res['values'] = videos
             
-            showinfo(title='Búsqueda Completada', message='Elige entre las resoluciones disponibles')
+            showinfo(title='Búsqueda Completada', message='Elige entre las opciones disponibles')
             
         except Exception as e:
-            showerror(title='Error', message=f'Error al buscar resoluciones!\nRazones posibles:\n-> Conexión inestable\n-> Enlace inválido\n-> {e}')
+            showerror(title='Error', message=f'Error al buscar opciones!\nRazones posibles:\n-> Conexión inestable\n-> Enlace inválido\n-> {e}')
             
 #Runing searchResolution as a separate thread
 def thread_findRes():
@@ -202,14 +202,14 @@ url_label.grid(row=0, column=0, padx=10, pady=5, sticky="w")
 url_entry = ttk.Entry(frame, width=40, style="TEntry")
 url_entry.grid(row=0, column=1, padx=10, pady=5, sticky="w")
 
-type_label = ttk.Label(frame, text="Tipo de video:", style="TLabel")
+type_label = ttk.Label(frame, text="Descargar:", style="TLabel")
 type_label.grid(row=1, column=0, padx=10, pady=5, sticky="w")
 
 video_type = ttk.Combobox(frame, values=["Video", "Audio", "Subs", "Video only"] ,width=10)
 video_type.current(0)
 video_type.grid(row=1, column=1, padx=10, pady=5, sticky="w")
 
-res_label = ttk.Label(frame, text="Tipo:", style="TLabel")
+res_label = ttk.Label(frame, text="Opciones:", style="TLabel")
 res_label.grid(row=2, column=0, padx=10, pady=5, sticky="w")
 
 video_res = ttk.Combobox(frame, width=10)
