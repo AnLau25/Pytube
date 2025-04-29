@@ -103,7 +103,7 @@ def download_vid():
         vid = YouTube(vid_link, on_progress_callback=on_progress)
         
         if video_type.get() == "Video only":
-            stream = vid.streams.filter(progressive=True, res=rsltn, file_extension='mp4').first()
+            stream = vid.streams.filter(adaptive=True, only_video=True, res=rsltn, file_extension='mp4').first()
             stream.download(output_path=folder_dir if folder_dir else ".")    
             
         elif video_type.get() == "Audio":
@@ -114,7 +114,7 @@ def download_vid():
             new_file = base + '.mp3'
             os.rename(file_path, new_file)
             
-        elif video_type.get() == "Sub":
+        elif video_type.get() == "Subs":
             caption = vid.captions.get_by_language_code(rsltn)
     
             if not caption:
@@ -129,6 +129,8 @@ def download_vid():
 
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(caption_txt)
+                
+            os.startfile(file_path)
         
         elif video_type.get() == "Video":
             video_stream = vid.streams.filter(adaptive=True, res=rsltn, file_extension='mp4').first()
