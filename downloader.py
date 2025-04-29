@@ -35,7 +35,7 @@ def find_resolution():
                 video_res['values'] = audios
             
             elif video_type.get() == "Subs":
-                captions = [f"{caption.lang}"for caption in vid.captions.all]
+                captions = [f"{caption.code}"for caption in vid.captions.all()]
                 captions = list(set(captions))
                 captions.sort(reverse=True)
                 
@@ -113,6 +113,9 @@ def download_vid():
             base, ext = os.path.splitext(file_path)
             new_file = base + '.mp3'
             os.rename(file_path, new_file)
+        elif video_type.get() == "Sub":
+            stream = vid.captions.get_by_language_code(rsltn)
+            stream.download(output_path=folder_dir if folder_dir else None)  
         
         elif video_type.get() == "Video":
             video_stream = vid.streams.filter(adaptive=True, res=rsltn, file_extension='mp4').first()
