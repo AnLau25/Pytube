@@ -102,7 +102,7 @@ def download_vid():
         
         vid = YouTube(vid_link, on_progress_callback=on_progress)
         
-        if video_type.get() == "Video only":
+        if video_type.get() == "Video solo":
             stream = vid.streams.filter(adaptive=True, only_video=True, res=rsltn, file_extension='mp4').first()
             stream.download(output_path=folder_dir if folder_dir else ".")    
             
@@ -211,7 +211,7 @@ url_entry.grid(row=0, column=1, padx=10, pady=5, sticky="w")
 type_label = ttk.Label(frame, text="Descargar:", style="TLabel")
 type_label.grid(row=1, column=0, padx=10, pady=5, sticky="w")
 
-video_type = ttk.Combobox(frame, values=["Video", "Audio", "Subs", "Video only"] ,width=10)
+video_type = ttk.Combobox(frame, values=["Video", "Audio", "Subs", "Video solo"] ,width=10)
 video_type.current(0)
 video_type.grid(row=1, column=1, padx=10, pady=5, sticky="w")
 
